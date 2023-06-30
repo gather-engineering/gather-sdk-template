@@ -1,4 +1,4 @@
-Welcome to Gather SDK
+# Welcome to Gather SDK
 
 We're thrilled that you're interested in contributing to our project and adding new data sources.
 Your contributions play a crucial role in expanding the capabilities of our SDK and making it even more valuable to the developer community.
