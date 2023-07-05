@@ -1,6 +1,5 @@
-import { create } from 'zustand';
-import { ImportState } from '@/dataStores/types/dataImporterState';
-import { DataSourceType } from '@/packageExports';
+import { create } from "zustand";
+import { ImportState } from "@/dataStores/types/dataImporterState";
 
 interface ImportStateStore {
   importState: ImportState;

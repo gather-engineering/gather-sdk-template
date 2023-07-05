@@ -1,9 +1,13 @@
-import { StoryObj, Meta } from '@storybook/react';
-import { Button } from '.';
-import { faCheck, faExclamationCircle, faLoader } from '@fortawesome/pro-regular-svg-icons';
+import { StoryObj, Meta } from "@storybook/react";
+import { Button } from ".";
+import {
+  faCheck,
+  faExclamationCircle,
+  faSpinner as faLoader,
+} from "@fortawesome/free-solid-svg-icons";
 
 export default {
-  title: 'Button',
+  title: "Button",
   component: Button,
 } as Meta<typeof Button>;
 
@@ -11,17 +15,17 @@ type Story = StoryObj<typeof Button>;
 
 export const Download: Story = {
   args: {
-    label: 'Download',
-    size: 'large',
-    variant: 'contained',
+    label: "Download",
+    size: "large",
+    variant: "contained",
   },
 };
 
 export const NeedToLogin: Story = {
   args: {
-    label: 'Need To Login',
-    size: 'large',
-    variant: 'contained',
+    label: "Need To Login",
+    size: "large",
+    variant: "contained",
     error: true,
     startIcon: faExclamationCircle,
   },
@@ -29,9 +33,9 @@ export const NeedToLogin: Story = {
 
 export const Downloading: Story = {
   args: {
-    label: 'Downloading',
-    size: 'large',
-    variant: 'contained',
+    label: "Downloading",
+    size: "large",
+    variant: "contained",
     startIcon: faLoader,
     loading: true,
   },
@@ -39,32 +43,32 @@ export const Downloading: Story = {
 
 export const Downloaded: Story = {
   args: {
-    label: 'Downloaded',
-    size: 'large',
-    variant: 'contained',
+    label: "Downloaded",
+    size: "large",
+    variant: "contained",
     loading: false,
     startIcon: faCheck,
-    startIconColor: '#36B37E',
+    startIconColor: "#36B37E",
   },
 };
 
 export const Outlined: Story = {
   args: {
-    label: 'Download',
-    size: 'large',
-    variant: 'outlined',
+    label: "Download",
+    size: "large",
+    variant: "outlined",
     loading: false,
   },
 };
 
 export const TextButtonWithColor: Story = {
   args: {
-    label: 'Download',
-    size: 'large',
-    variant: 'text',
+    label: "Download",
+    size: "large",
+    variant: "text",
     loading: false,
     styles: {
-      color: 'red',
+      color: "red",
     },
   },
 };
