@@ -1,5 +1,5 @@
 {
-  "name": "@ariagato/gather-sdk",
+  "name": "@ariagato/gather-sdk-template",
   "version": "0.1.34",
   "type": "module",
   "scripts": {

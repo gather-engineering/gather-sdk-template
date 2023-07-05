@@ -2,6 +2,7 @@
  * Data sources enums
  */
 export enum DATA_SOURCES {
+  MY_FITNESS_PAL = 'my_fitness_pal',
   AMAZON = "amazon",
 }
 
