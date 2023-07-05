@@ -1,4 +1,4 @@
-import { DATA_SOURCES } from '@/packageExports';
+import { DATA_SOURCES } from "@/constants/dataSources";
 
 type BaseDataImporterContext = {
   dataSource: DATA_SOURCES;
@@ -9,4 +9,6 @@ type BaseDataImporterContext = {
   confirmDataRetryCount?: number;
 };
 
-export interface DataImporterContext extends BaseDataImporterContext, Record<string, any> {}
+export interface DataImporterContext
+  extends BaseDataImporterContext,
+    Record<string, any> {}

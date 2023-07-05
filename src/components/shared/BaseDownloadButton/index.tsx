@@ -1,14 +1,17 @@
-import { DataState, ImportState } from '@/dataStores/types/dataImporterState';
-import React from 'react';
-import { Button } from '@/components/shared/button';
-import { OnClickHandler } from '../button/props';
+import { DataState, ImportState } from "@/dataStores/types/dataImporterState";
+import React from "react";
+import { Button } from "@/components/shared/button";
+import { OnClickHandler } from "../button/props";
 import {
   faCheck,
   faArrowsRotate,
-  faLoader,
-  faHourglassClock,
-} from '@fortawesome/pro-regular-svg-icons';
-import { faEmptySet, faExclamationCircle } from '@fortawesome/pro-duotone-svg-icons';
+  faSpinner as faLoader,
+  faClock as faHourglassClock,
+} from "@fortawesome/free-solid-svg-icons";
+import {
+  faMehBlank as faEmptySet,
+  faExclamationCircle,
+} from "@fortawesome/free-solid-svg-icons";
 
 type DownloadButtonProps = {
   dataState: DataState | undefined;
@@ -32,7 +35,7 @@ export default function BaseDownloadButton({
           label="Download"
           size="large"
           onClick={onClick}
-          styles={{ width: '155px', padding: '8px' }}
+          styles={{ width: "155px", padding: "8px" }}
         />
       );
 
@@ -46,7 +49,7 @@ export default function BaseDownloadButton({
           size="large"
           startIcon={faExclamationCircle}
           onClick={onClick}
-          styles={{ width: '155px', padding: '8px' }}
+          styles={{ width: "155px", padding: "8px" }}
         />
       );
 
@@ -61,23 +64,23 @@ export default function BaseDownloadButton({
           startIcon={faLoader}
           startIconColor="#637381"
           onClick={onClick}
-          styles={{ width: '155px', padding: '8px' }}
+          styles={{ width: "155px", padding: "8px" }}
         />
       );
 
     case ImportState.COMPLETED: {
       const hasData = dataState === DataState.DATA_RECEIVED;
-      const greenColor = '#36B37E';
-      const greyColor = '#919EAB';
+      const greenColor = "#36B37E";
+      const greyColor = "#919EAB";
       return (
         <Button
-          label={hasData ? 'Downloaded' : 'No Data'}
+          label={hasData ? "Downloaded" : "No Data"}
           size="large"
           disabled
           startIcon={hasData ? faCheck : faEmptySet}
           startIconColor={hasData ? greenColor : greyColor}
           onClick={onClick}
-          styles={{ width: '155px', padding: '8px' }}
+          styles={{ width: "155px", padding: "8px" }}
         />
       );
     }
@@ -88,7 +91,7 @@ export default function BaseDownloadButton({
           label="Connect your Gmail"
           size="large"
           onClick={onRequestEmailAuthentication}
-          styles={{ width: '155px', padding: '8px' }}
+          styles={{ width: "155px", padding: "8px" }}
         />
       );
     case ImportState.PENDING_UPLOAD:
@@ -98,7 +101,7 @@ export default function BaseDownloadButton({
           size="large"
           disabled
           startIcon={faHourglassClock}
-          styles={{ width: '155px', padding: '8px' }}
+          styles={{ width: "155px", padding: "8px" }}
         />
       );
     case ImportState.UPLOAD_FILE_READY:
@@ -107,7 +110,7 @@ export default function BaseDownloadButton({
           label="Download Data"
           size="large"
           onClick={onUploadFileClick}
-          styles={{ width: '155px', padding: '8px' }}
+          styles={{ width: "155px", padding: "8px" }}
         />
       );
 
@@ -119,7 +122,7 @@ export default function BaseDownloadButton({
           size="large"
           startIcon={faArrowsRotate}
           onClick={onClick}
-          styles={{ width: '155px', padding: '8px' }}
+          styles={{ width: "155px", padding: "8px" }}
         />
       );
 

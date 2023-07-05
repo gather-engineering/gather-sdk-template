@@ -1,4 +1,4 @@
-import { DataSourceType } from '@/packageExports';
+import { DataSourceType } from "@/constants/dataSources";
 
 export type LoginPopupProps = {
   open: boolean;
