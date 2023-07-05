@@ -115,8 +115,8 @@
     "vite-plugin-dts": "^2.2.0",
     "web-streams-polyfill": "^3.2.1"
   },
-  "main": "dist/gather-sdk.cjs",
-  "module": "dist/gather-sdk.js",
+  "main": "dist/gather-sdk-template.cjs",
+  "module": "dist/gather-sdk-template.js",
   "files": [
     "dist"
   ],

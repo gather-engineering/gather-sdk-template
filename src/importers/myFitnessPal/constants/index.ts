@@ -4,6 +4,8 @@ import { IMPORT_FLOW_STATES } from '@/importers/sharedXState/importFlowStates.co
 export const MY_FITNESS_PAL_DOMAIN = 'https://*.myfitnesspal.com/*';
 export const MY_FITNESS_PAL_LOGIN_URL = 'https://www.myfitnesspal.com/account/login';
 
+export const MY_FITNESS_PAL_REQUEST_TOKEN = 'myFitnessPalRequestToken';
+
 export enum MyFitnessPalTableNames {
   GOALS = 'goals',
 }

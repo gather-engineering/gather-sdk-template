@@ -2,6 +2,7 @@ import { DataImporterError } from '@/types/customErrors/DataImporterError';
 import {
   MY_FITNESS_PAL_DOMAIN,
   MY_FITNESS_PAL_LOGIN_URL,
+  MY_FITNESS_PAL_REQUEST_TOKEN,
 } from '@/importers/myFitnessPal/constants';
 
 export class MyFitnessPalImporterService {
@@ -17,9 +18,15 @@ export class MyFitnessPalImporterService {
 
   static async getRequestToken(tabId: number) {
     chrome.webRequest.onBeforeRequest.addListener(
-      (details) => {
+      function listener(details) {
         if (details.tabId === tabId) {
-          console.log('details', details.url);
+          const { url } = details;
+          const match = url.match(/\/_next\/data\/([^/]+)/);
+          const value = match ? match[1] : null;
+          if (value) {
+            sessionStorage.setItem(MY_FITNESS_PAL_REQUEST_TOKEN, value);
+            chrome.webRequest.onBeforeRequest.removeListener(listener);
+          }
         }
       },
       { urls: [MY_FITNESS_PAL_DOMAIN] }
