@@ -6,8 +6,12 @@ import { PUBSUB_MESSAGES } from '@/importers/framework/pubSubController/types/me
 import { ImportMediator } from '../shared/importMediator';
 import { ImportMediatorType } from '../serviceWorker/types';
 import { MyFitnessPalImporterService } from '@/importers/myFitnessPal/service';
+import { AUTHENTICATION_CHECK_POLLING_MAX_COUNT } from '@/importers/myFitnessPal/constants';
+import { sleep } from '@/utils/sleep';
+import { TIME } from '@/utils/time';
 
 class MyFitnessPalImportMediator extends ImportMediator {
+  private requestToken: string | null = null;
   constructor() {
     super(DATA_SOURCES.MY_FITNESS_PAL, ImportMediatorType.ServiceWorker, {
       /* TODO: update the schedule interval and unit */
@@ -25,10 +29,39 @@ class MyFitnessPalImportMediator extends ImportMediator {
       type: PUBSUB_MESSAGES.START_AUTHENTICATION,
       dataSource: DATA_SOURCES.MY_FITNESS_PAL,
     });
-    await MyFitnessPalImporterService.startAuthentication();
 
-    this.postMessage({
-      type: PUBSUB_MESSAGES.IMPORT,
+    await this.subscribeToRetrievedEvent();
+
+    await MyFitnessPalImporterService.startAuthentication();
+  }
+
+  async subscribeToRetrievedEvent(): Promise<void> {
+    console.log('subscribeToRetrievedEvent');
+    chrome.runtime.onMessage.addListener(async (message, sender) => {
+      // const { requestToken, tabId } = message;
+      // this.requestToken = requestToken;
+      console.log('tabId', sender.tab?.id);
+      console.log('message', message);
+      if (message.type === PUBSUB_MESSAGES.TOKEN_RETRIEVED) {
+        await this.checkAuthentication();
+      }
+    });
+  }
+
+  async checkAuthentication(): Promise<void> {
+    console.log('vao');
+    for (let i = 0; i < AUTHENTICATION_CHECK_POLLING_MAX_COUNT; i++) {
+      const isAuth = await MyFitnessPalImporterService.silentCheckAuthentication();
+      if (isAuth) {
+        return this.postMessage({
+          type: PUBSUB_MESSAGES.IMPORT,
+          dataSource: DATA_SOURCES.MY_FITNESS_PAL,
+        });
+      }
+      await sleep(TIME.SECOND);
+    }
+    return this.postMessage({
+      type: PUBSUB_MESSAGES.AUTHENTICATION_ERROR,
       dataSource: DATA_SOURCES.MY_FITNESS_PAL,
     });
   }

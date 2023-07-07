@@ -4,6 +4,7 @@ export type WorkerMessage = {
   type: string;
   dataSource: string;
   access_token?: string;
+  requestToken?: string;
   user_id?: string;
   scope?: string;
   userInfo?: UserInfo;
