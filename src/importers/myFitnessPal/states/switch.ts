@@ -15,9 +15,14 @@ export const switchState = {
       },
       {
         target: `${MY_FITNESS_PAL_IMPORT_FLOW_STATES.IMPORT}`,
-        cond: (context: any, _: any) => context.targetState === MY_FITNESS_PAL_IMPORT_FLOW_STATES.IMPORT,
+        cond: (context: any, _: any) =>
+          context.targetState === MY_FITNESS_PAL_IMPORT_FLOW_STATES.IMPORT,
       },
-      /* TODO: Add any specific states here */
+      {
+        target: `${MY_FITNESS_PAL_IMPORT_FLOW_STATES.IMPORT_GOALS}`,
+        cond: (context: any, _: any) =>
+          context.targetState === MY_FITNESS_PAL_IMPORT_FLOW_STATES.IMPORT_GOALS,
+      },
     ],
   },
 };

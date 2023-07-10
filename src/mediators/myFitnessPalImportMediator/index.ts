@@ -31,11 +31,22 @@ class MyFitnessPalImportMediator extends ImportMediator {
 
     await this.subscribeToRetrievedEvent();
 
-    await MyFitnessPalImporterService.startAuthentication();
+    const requestToken = await MyFitnessPalImporterService.silentCheckAuthentication();
+    console.log('requestToken check ===>', requestToken);
+    if (requestToken) {
+      return this.postMessage({
+        type: PUBSUB_MESSAGES.IMPORT,
+        dataSource: DATA_SOURCES.MY_FITNESS_PAL,
+        data: {
+          requestToken,
+        },
+      });
+    }
+    return await MyFitnessPalImporterService.startAuthentication();
   }
 
   async subscribeToRetrievedEvent(): Promise<void> {
-    chrome.runtime.onMessage.addListener(async (message, sender) => {
+    chrome.runtime.onMessage.addListener(async (message) => {
       const { requestToken, tabId } = message;
       if (message.type === PUBSUB_MESSAGES.TOKEN_RETRIEVED) {
         await this.checkAuthentication(tabId, requestToken);

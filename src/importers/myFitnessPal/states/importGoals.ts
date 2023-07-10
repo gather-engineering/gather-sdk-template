@@ -15,8 +15,8 @@ export const importGoalsState = {
   [MY_FITNESS_PAL_IMPORT_FLOW_STATES.IMPORT_GOALS]: {
     invoke: {
       id: `${MY_FITNESS_PAL_IMPORT_FLOW_STATES.IMPORT_GOALS}`,
-      src: async (context: DataImporterContext, event: any) => {
-        const { requestToken, tabId } = event.data;
+      src: async (context: DataImporterContext, _: any) => {
+        const { requestToken } = context;
         const { finishedCurrentState } = await MyFitnessPalImporterService.importGoals(
           requestToken
         );

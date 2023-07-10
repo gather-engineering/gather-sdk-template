@@ -1,4 +1,9 @@
-export const getRequestTokenFromURL = (url: string) => {
-  const match = url.match(/\/_next\/data\/([^/]+)/);
-  return match ? match[1] : null;
+export const getRequestTokenFromURL = (url: string): string | undefined => {
+  const regex = [`/\\/_next\\/data\\/([^/]+)/`, `/_next\\/static\\/(.*?)\\/_buildManifest.js`];
+  for (const r of regex) {
+    const match = url.match(r);
+    if (match) {
+      return match[1];
+    }
+  }
 };
