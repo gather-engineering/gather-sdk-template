@@ -6,9 +6,13 @@ import { PUBSUB_MESSAGES } from '@/importers/framework/pubSubController/types/me
 import { ImportMediator } from '../shared/importMediator';
 import { ImportMediatorType } from '../serviceWorker/types';
 import { MyFitnessPalImporterService } from '@/importers/myFitnessPal/service';
-import { AUTHENTICATION_CHECK_POLLING_MAX_COUNT } from '@/importers/myFitnessPal/constants';
+import {
+  AUTHENTICATION_CHECK_POLLING_MAX_COUNT,
+  MY_FITNESS_PAL_URL,
+} from '@/importers/myFitnessPal/constants';
 import { sleep } from '@/utils/sleep';
 import { TIME } from '@/utils/time';
+import { closeTabById, createTab } from '@/components/utils/chromeTabs';
 
 class MyFitnessPalImportMediator extends ImportMediator {
   constructor() {
@@ -29,46 +33,43 @@ class MyFitnessPalImportMediator extends ImportMediator {
       dataSource: DATA_SOURCES.MY_FITNESS_PAL,
     });
 
-    await this.subscribeToRetrievedEvent();
-
     const requestToken = await MyFitnessPalImporterService.silentCheckAuthentication();
-    console.log('requestToken check ===>', requestToken);
-    if (requestToken) {
-      return this.postMessage({
-        type: PUBSUB_MESSAGES.IMPORT,
-        dataSource: DATA_SOURCES.MY_FITNESS_PAL,
-        data: {
-          requestToken,
-        },
-      });
-    }
-    return await MyFitnessPalImporterService.startAuthentication();
-  }
+    if (!requestToken) return await this.checkAuthentication();
 
-  async subscribeToRetrievedEvent(): Promise<void> {
-    chrome.runtime.onMessage.addListener(async (message) => {
-      const { requestToken, tabId } = message;
-      if (message.type === PUBSUB_MESSAGES.TOKEN_RETRIEVED) {
-        await this.checkAuthentication(tabId, requestToken);
-      }
+    return this.postMessage({
+      type: PUBSUB_MESSAGES.IMPORT,
+      dataSource: DATA_SOURCES.MY_FITNESS_PAL,
+      requestToken,
     });
   }
 
-  async checkAuthentication(tabId: string, requestToken: string): Promise<void> {
+  async checkAuthentication(): Promise<void> {
+    const tab = await createTab({
+      active: true,
+      url: MY_FITNESS_PAL_URL.LOGIN_URL,
+    });
+
+    if (!tab.id) {
+      return this.postMessage({
+        type: PUBSUB_MESSAGES.AUTHENTICATION_ERROR,
+        dataSource: DATA_SOURCES.MY_FITNESS_PAL,
+      });
+    }
+
     for (let i = 0; i < AUTHENTICATION_CHECK_POLLING_MAX_COUNT; i++) {
-      const isAuth = await MyFitnessPalImporterService.silentCheckAuthentication();
-      if (isAuth) {
+      const requestToken = await MyFitnessPalImporterService.silentCheckAuthentication();
+      if (requestToken) {
+        await closeTabById(tab.id);
         return this.postMessage({
           type: PUBSUB_MESSAGES.IMPORT,
           dataSource: DATA_SOURCES.MY_FITNESS_PAL,
-          data: {
-            requestToken,
-            tabId,
-          },
+          requestToken,
         });
       }
       await sleep(TIME.SECOND);
     }
+
+    await closeTabById(tab.id);
     return this.postMessage({
       type: PUBSUB_MESSAGES.AUTHENTICATION_ERROR,
       dataSource: DATA_SOURCES.MY_FITNESS_PAL,

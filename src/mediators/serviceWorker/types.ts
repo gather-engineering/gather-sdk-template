@@ -3,6 +3,7 @@ import { UserInfo } from '@/components/utils/props';
 export type WorkerMessage = {
   type: string;
   dataSource: string;
+  requestToken?: string;
   access_token?: string;
   user_id?: string;
   scope?: string;
@@ -11,7 +12,6 @@ export type WorkerMessage = {
   email?: string;
   refresh_token_info?: string;
   upload_file_link?: string;
-  data?: any;
 };
 
 export enum ImportMediatorType {

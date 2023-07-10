@@ -16,8 +16,7 @@ export const importState = {
     invoke: {
       id: `${MY_FITNESS_PAL_IMPORT_FLOW_STATES.IMPORT}`,
       src: async (context: DataImporterContext, event: any) => {
-        if (event.data?.requestToken) context.requestToken = event.data.requestToken;
-        if (event.data?.tabId) context.tabId = event.data.tabId;
+        if (event?.requestToken) context.requestToken = event.requestToken;
         if (!context.requestToken) throw Error('Missing requestToken');
         const { targetState, hasData } = await identifyTargetState(context);
         context.targetState = targetState;
