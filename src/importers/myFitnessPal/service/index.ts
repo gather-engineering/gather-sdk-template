@@ -4,10 +4,7 @@ import { MyFitnessGoalsResponse } from '@/importers/myFitnessPal/types/myFitness
 import { myFitnessPalDataStore } from '@/importers/myFitnessPal/dataStore';
 import DOMParser from 'dom-parser';
 import compact from 'lodash/compact';
-import {
-  MyFitnessNewsFeedData,
-  MyFitnessNewsFeedResponse,
-} from '@/importers/myFitnessPal/types/myFitnessNewsFeedResponse';
+import { MyFitnessNewsFeedData } from '@/importers/myFitnessPal/types/myFitnessNewsFeedResponse';
 
 export class MyFitnessPalImporterService {
   constructor() {}
@@ -64,28 +61,37 @@ export class MyFitnessPalImporterService {
     return { finishedCurrentState: true };
   }
 
-  static async importNewsFeed() {
-    const homePageHtml = await fetch(MY_FITNESS_PAL_URL.HOME_PAGE_URL, {
+  static async importNewsFeed(pageToken: string) {
+    const params = new URLSearchParams({ page_token: pageToken });
+    const url = `${MY_FITNESS_PAL_URL.TIME_LINE}?${params.toString()}`;
+    let finishedCurrentState = true;
+    const newsFeedData: MyFitnessNewsFeedData[] = await fetch(url, {
       method: 'GET',
       credentials: 'include',
       mode: 'cors',
-    }).then(async (rs) => await rs.text());
-
-    const dom = new DOMParser().parseFromString(homePageHtml);
-    const nextData = dom.getElementById('__NEXT_DATA__');
-    const newsFeedResponse = JSON.parse(nextData?.innerHTML || '') as MyFitnessNewsFeedResponse;
-    const queries = newsFeedResponse?.props?.pageProps?.dehydratedState?.queries?.filter(
-      (query) => {
-        if (query?.queryKey?.length && query.queryKey[0] === 'timeline') return query;
+    }).then(async (rs) => {
+      const response = (await rs.json()) as MyFitnessNewsFeedData[];
+      const link = rs.headers.get('link');
+      const token = this.getNewsFeedPageToken(link);
+      if (token) {
+        finishedCurrentState = false;
+        pageToken = token;
       }
-    );
-    const newsFeedData: MyFitnessNewsFeedData[] = queries?.flatMap(
-      (query) => query?.state?.data[0] || []
-    );
-    console.log('newsFeedResponse ==>', newsFeedResponse);
+      return response;
+    });
 
     await myFitnessPalDataStore[MyFitnessPalTableNames.NEWS_FEED].bulkPut(newsFeedData);
 
-    return { finishedCurrentState: true };
+    return { finishedCurrentState, pageToken };
+  }
+
+  private static getNewsFeedPageToken(link: string | null) {
+    if (!link) return;
+    const regex = /<([^>]+)>;\s*rel=next/;
+    const match = link.match(regex);
+    const firstURL = match ? match[1] : null;
+    if (!firstURL) return;
+    const params = new URLSearchParams(new URL(firstURL).search);
+    return params.get('page_token');
   }
 }

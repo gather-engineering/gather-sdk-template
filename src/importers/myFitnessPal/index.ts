@@ -32,6 +32,7 @@ class MyFitnessPalImporter extends DataImporter {
         context: {
           dataSource: DATA_SOURCES.MY_FITNESS_PAL,
           hasData: false,
+          pageToken: '',
           targetState: '',
         } as DataImporterContext,
         states: {

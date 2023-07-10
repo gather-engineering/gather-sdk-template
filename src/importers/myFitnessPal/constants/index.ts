@@ -4,10 +4,11 @@ import { IMPORT_FLOW_STATES } from '@/importers/sharedXState/importFlowStates.co
 export const MY_FITNESS_PAL_DOMAIN = 'https://myfitnesspal.com/*';
 
 export const MY_FITNESS_PAL_URL = {
+  BASE_URL: 'https://www.myfitnesspal.com/_next/data',
   HOME_PAGE_URL: 'https://myfitnesspal.com',
   LOGIN_URL: 'https://www.myfitnesspal.com/account/login',
   SESSION_URL: 'https://www.myfitnesspal.com/api/auth/session',
-  BASE_URL: 'https://www.myfitnesspal.com/_next/data',
+  TIME_LINE: 'https://www.myfitnesspal.com/api/services/activity/timeline',
   GOALS_URL: 'en/account/my-goals.json',
 };
 

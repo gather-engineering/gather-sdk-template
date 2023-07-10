@@ -16,7 +16,9 @@ export const importNewsFeedState = {
     invoke: {
       id: `${MY_FITNESS_PAL_IMPORT_FLOW_STATES.IMPORT_NEWSFEED}`,
       src: async (context: DataImporterContext, _: any) => {
-        const { finishedCurrentState } = await MyFitnessPalImporterService.importNewsFeed();
+        const { finishedCurrentState, pageToken } =
+          await MyFitnessPalImporterService.importNewsFeed(context.pageToken);
+        context.pageToken = pageToken;
         context.finishedCurrentState = finishedCurrentState;
       },
       onDone: {
