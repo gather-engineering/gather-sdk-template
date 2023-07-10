@@ -95,9 +95,6 @@ export class MyFitnessPalImporterService {
       )
     );
 
-    console.log('dailyGoals ==>', dailyGoals);
-    console.log('defaultGoals ==>', defaultGoals);
-
     await myFitnessPalDataStore[MyFitnessPalTableNames.DAILY_GOALS].bulkPut(dailyGoals);
     await myFitnessPalDataStore[MyFitnessPalTableNames.DEFAULT_GOALS].bulkPut(defaultGoals);
 

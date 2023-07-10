@@ -16,14 +16,13 @@ export const importGoalsState = {
     invoke: {
       id: `${MY_FITNESS_PAL_IMPORT_FLOW_STATES.IMPORT_GOALS}`,
       src: async (context: DataImporterContext, _: any) => {
-        const { requestToken } = context;
         const { finishedCurrentState } = await MyFitnessPalImporterService.importGoals(
-          requestToken
+          context.requestToken
         );
         context.finishedCurrentState = finishedCurrentState;
       },
       onDone: {
-        target: `${MY_FITNESS_PAL_IMPORT_FLOW_STATES.SWITCH}`,
+        target: `${MY_FITNESS_PAL_IMPORT_FLOW_STATES.IMPORT}`,
       },
       onError: {
         target: `${MY_FITNESS_PAL_IMPORT_FLOW_STATES.IMPORT_ERROR}`,
