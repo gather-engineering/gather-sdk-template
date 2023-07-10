@@ -4,7 +4,6 @@ export type WorkerMessage = {
   type: string;
   dataSource: string;
   access_token?: string;
-  requestToken?: string;
   user_id?: string;
   scope?: string;
   userInfo?: UserInfo;
@@ -12,6 +11,7 @@ export type WorkerMessage = {
   email?: string;
   refresh_token_info?: string;
   upload_file_link?: string;
+  data?: any;
 };
 
 export enum ImportMediatorType {

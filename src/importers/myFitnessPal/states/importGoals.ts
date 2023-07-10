@@ -9,13 +9,18 @@ import {
   ImportState,
 } from '@/dataStores/types/dataImporterState';
 import { DataImporterContext } from '@/importers/framework/dataImporter/context';
+import { MyFitnessPalImporterService } from '@/importers/myFitnessPal/service';
 
 export const importGoalsState = {
   [MY_FITNESS_PAL_IMPORT_FLOW_STATES.IMPORT_GOALS]: {
     invoke: {
       id: `${MY_FITNESS_PAL_IMPORT_FLOW_STATES.IMPORT_GOALS}`,
       src: async (context: DataImporterContext, event: any) => {
-        // TODO: import data
+        const { requestToken, tabId } = event.data;
+        const { finishedCurrentState } = await MyFitnessPalImporterService.importGoals(
+          requestToken
+        );
+        context.finishedCurrentState = finishedCurrentState;
       },
       onDone: {
         target: `${MY_FITNESS_PAL_IMPORT_FLOW_STATES.SWITCH}`,

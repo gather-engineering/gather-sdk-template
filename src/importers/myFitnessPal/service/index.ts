@@ -1,4 +1,5 @@
 import { MY_FITNESS_PAL_DOMAIN, MY_FITNESS_PAL_URL } from '@/importers/myFitnessPal/constants';
+import { handleScriptingError } from '@/importers/myFitnessPal/utils/handleScriptingError';
 import { getRequestTokenFromURL } from '@/importers/myFitnessPal/utils/getRequestToken';
 
 export class MyFitnessPalImporterService {
@@ -28,8 +29,7 @@ export class MyFitnessPalImporterService {
       function listener(details) {
         const requestToken = getRequestTokenFromURL(details.url);
         if (requestToken) {
-          console.log('requestToken ==>', requestToken);
-          MyFitnessPalImporterService.sendRequestToken(requestToken);
+          MyFitnessPalImporterService.sendRequestToken(tabId, requestToken);
           chrome.webRequest.onBeforeRequest.removeListener(listener);
         }
       },
@@ -37,14 +37,27 @@ export class MyFitnessPalImporterService {
     );
   }
 
-  private static async sendRequestToken(requestToken: string) {
-    console.log('vao');
-    await chrome.runtime.sendMessage({
-      type: 'TOKEN_RETRIEVED',
-      requestToken,
-    });
+  private static sendRequestToken(tabId: number, requestToken: string) {
+    chrome.scripting.executeScript(
+      {
+        target: { tabId },
+        func: async (args: string[]) => {
+          if (!args.length) return console.error('No arguments passed to the script');
+          return chrome.runtime.sendMessage({
+            type: 'TOKEN_RETRIEVED',
+            requestToken: args[0],
+            tabId: args[1],
+          });
+        },
+        args: [[requestToken, String(tabId)]],
+      },
+      (results) => {
+        return handleScriptingError(results);
+      }
+    );
   }
-  async hasData(): Promise<boolean> {
-    return false;
+
+  static async importGoals(requestToken: string) {
+    return { finishedCurrentState: true };
   }
 }

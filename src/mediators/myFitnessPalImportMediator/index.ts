@@ -11,7 +11,6 @@ import { sleep } from '@/utils/sleep';
 import { TIME } from '@/utils/time';
 
 class MyFitnessPalImportMediator extends ImportMediator {
-  private requestToken: string | null = null;
   constructor() {
     super(DATA_SOURCES.MY_FITNESS_PAL, ImportMediatorType.ServiceWorker, {
       /* TODO: update the schedule interval and unit */
@@ -36,26 +35,25 @@ class MyFitnessPalImportMediator extends ImportMediator {
   }
 
   async subscribeToRetrievedEvent(): Promise<void> {
-    console.log('subscribeToRetrievedEvent');
     chrome.runtime.onMessage.addListener(async (message, sender) => {
-      // const { requestToken, tabId } = message;
-      // this.requestToken = requestToken;
-      console.log('tabId', sender.tab?.id);
-      console.log('message', message);
+      const { requestToken, tabId } = message;
       if (message.type === PUBSUB_MESSAGES.TOKEN_RETRIEVED) {
-        await this.checkAuthentication();
+        await this.checkAuthentication(tabId, requestToken);
       }
     });
   }
 
-  async checkAuthentication(): Promise<void> {
-    console.log('vao');
+  async checkAuthentication(tabId: string, requestToken: string): Promise<void> {
     for (let i = 0; i < AUTHENTICATION_CHECK_POLLING_MAX_COUNT; i++) {
       const isAuth = await MyFitnessPalImporterService.silentCheckAuthentication();
       if (isAuth) {
         return this.postMessage({
           type: PUBSUB_MESSAGES.IMPORT,
           dataSource: DATA_SOURCES.MY_FITNESS_PAL,
+          data: {
+            requestToken,
+            tabId,
+          },
         });
       }
       await sleep(TIME.SECOND);

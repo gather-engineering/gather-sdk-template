@@ -9,13 +9,20 @@ import {
   ImportState,
 } from '@/dataStores/types/dataImporterState';
 import { DataImporterContext } from '@/importers/framework/dataImporter/context';
+import { identifyTargetState } from '@/importers/myFitnessPal/utils/identifyTargetState';
 
 export const importState = {
   [MY_FITNESS_PAL_IMPORT_FLOW_STATES.IMPORT]: {
     invoke: {
       id: `${MY_FITNESS_PAL_IMPORT_FLOW_STATES.IMPORT}`,
       src: async (context: DataImporterContext, event: any) => {
-        // TODO: import data
+        const { requestToken, tabId } = event.data;
+        context.requestToken = requestToken || context.requestToken;
+        context.tabId = tabId || context.tabId;
+        if (!context.requestToken) throw Error('Missing requestToken');
+        const { targetState, hasData } = await identifyTargetState(context);
+        context.targetState = targetState;
+        context.hasData = hasData;
       },
       onDone: {
         target: `${MY_FITNESS_PAL_IMPORT_FLOW_STATES.SWITCH}`,
