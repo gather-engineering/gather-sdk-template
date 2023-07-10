@@ -4,6 +4,10 @@ import { MyFitnessGoalsResponse } from '@/importers/myFitnessPal/types/myFitness
 import { myFitnessPalDataStore } from '@/importers/myFitnessPal/dataStore';
 import DOMParser from 'dom-parser';
 import compact from 'lodash/compact';
+import {
+  MyFitnessNewsFeedData,
+  MyFitnessNewsFeedResponse,
+} from '@/importers/myFitnessPal/types/myFitnessNewsFeedResponse';
 
 export class MyFitnessPalImporterService {
   constructor() {}
@@ -20,12 +24,12 @@ export class MyFitnessPalImporterService {
     }).then((rs) => rs.ok);
     if (!isAuth) return;
 
-    const html = await fetch(MY_FITNESS_PAL_URL.HOME_PAGE_URL, {
+    const homePageHtml = await fetch(MY_FITNESS_PAL_URL.HOME_PAGE_URL, {
       credentials: 'include',
       mode: 'cors',
       redirect: 'follow',
     }).then(async (rs) => await rs.text());
-    const dom = new DOMParser().parseFromString(html);
+    const dom = new DOMParser().parseFromString(homePageHtml);
     const scripts = dom.getElementsByTagName('script') || [];
 
     for (const script of scripts) {
@@ -56,6 +60,31 @@ export class MyFitnessPalImporterService {
 
     await myFitnessPalDataStore[MyFitnessPalTableNames.DAILY_GOALS].bulkPut(dailyGoals);
     await myFitnessPalDataStore[MyFitnessPalTableNames.DEFAULT_GOALS].bulkPut(defaultGoals);
+
+    return { finishedCurrentState: true };
+  }
+
+  static async importNewsFeed() {
+    const homePageHtml = await fetch(MY_FITNESS_PAL_URL.HOME_PAGE_URL, {
+      method: 'GET',
+      credentials: 'include',
+      mode: 'cors',
+    }).then(async (rs) => await rs.text());
+
+    const dom = new DOMParser().parseFromString(homePageHtml);
+    const nextData = dom.getElementById('__NEXT_DATA__');
+    const newsFeedResponse = JSON.parse(nextData?.innerHTML || '') as MyFitnessNewsFeedResponse;
+    const queries = newsFeedResponse?.props?.pageProps?.dehydratedState?.queries?.filter(
+      (query) => {
+        if (query?.queryKey?.length && query.queryKey[0] === 'timeline') return query;
+      }
+    );
+    const newsFeedData: MyFitnessNewsFeedData[] = queries?.flatMap(
+      (query) => query?.state?.data[0] || []
+    );
+    console.log('newsFeedResponse ==>', newsFeedResponse);
+
+    await myFitnessPalDataStore[MyFitnessPalTableNames.NEWS_FEED].bulkPut(newsFeedData);
 
     return { finishedCurrentState: true };
   }

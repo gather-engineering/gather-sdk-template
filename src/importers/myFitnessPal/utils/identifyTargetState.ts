@@ -17,6 +17,10 @@ export const identifyTargetState = async (
       break;
     case MY_FITNESS_PAL_IMPORT_FLOW_STATES.IMPORT_GOALS:
       if (!finishedCurrentState) break;
+      targetState = MY_FITNESS_PAL_IMPORT_FLOW_STATES.IMPORT_NEWSFEED;
+      break;
+    case MY_FITNESS_PAL_IMPORT_FLOW_STATES.IMPORT_NEWSFEED:
+      if (!finishedCurrentState) break;
       targetState = MY_FITNESS_PAL_IMPORT_FLOW_STATES.IMPORT_COMPLETED;
       break;
     case MY_FITNESS_PAL_IMPORT_FLOW_STATES.IMPORT_COMPLETED:

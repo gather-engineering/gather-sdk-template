@@ -18,6 +18,11 @@ export const switchState = {
         cond: (context: any, _: any) =>
           context.targetState === MY_FITNESS_PAL_IMPORT_FLOW_STATES.IMPORT_GOALS,
       },
+      {
+        target: `${MY_FITNESS_PAL_IMPORT_FLOW_STATES.IMPORT_NEWSFEED}`,
+        cond: (context: any, _: any) =>
+          context.targetState === MY_FITNESS_PAL_IMPORT_FLOW_STATES.IMPORT_NEWSFEED,
+      },
     ],
   },
 };

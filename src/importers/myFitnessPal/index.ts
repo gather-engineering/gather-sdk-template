@@ -1,4 +1,4 @@
-import { StateMachine, createMachine } from 'xstate';
+import { createMachine, StateMachine } from 'xstate';
 import { DataImporter } from '../framework/dataImporter';
 import { v4 as uuid } from 'uuid';
 import { DATA_SOURCES } from '@/constants/dataSources';
@@ -38,6 +38,7 @@ class MyFitnessPalImporter extends DataImporter {
           ...commonImportFlowStates,
           ...states.importState,
           ...states.importGoalsState,
+          ...states.importNewsFeedState,
           ...states.switchState,
         },
         ...commonImporterEvents,

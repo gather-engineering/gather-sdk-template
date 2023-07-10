@@ -16,10 +16,12 @@ export const AUTHENTICATION_CHECK_POLLING_MAX_COUNT = 120;
 export enum MyFitnessPalTableNames {
   DAILY_GOALS = 'dailyGoals',
   DEFAULT_GOALS = 'defaultGoals',
+  NEWS_FEED = 'newsFeed',
 }
 
 export enum MY_FITNESS_PAL_SPECIFIC_STATES {
   IMPORT_GOALS = 'importGoals',
+  IMPORT_NEWSFEED = 'importNewsfeed',
 }
 
 export const MY_FITNESS_PAL_IMPORT_FLOW_STATES = {
