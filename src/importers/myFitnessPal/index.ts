@@ -41,6 +41,7 @@ class MyFitnessPalImporter extends DataImporter {
           ...states.importGoalsState,
           ...states.importNewsFeedState,
           ...states.importProfileState,
+          ...states.importReportsState,
           ...states.switchState,
         },
         ...commonImporterEvents,

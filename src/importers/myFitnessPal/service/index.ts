@@ -1,4 +1,8 @@
-import { MY_FITNESS_PAL_URL, MyFitnessPalTableNames } from '@/importers/myFitnessPal/constants';
+import {
+  MY_FITNESS_PAL_URL,
+  MyFitnessPalTableNames,
+  REPORT_DATE,
+} from '@/importers/myFitnessPal/constants';
 import { getRequestTokenFromURL } from '@/importers/myFitnessPal/utils/getRequestToken';
 import { MyFitnessGoalsResponse } from '@/importers/myFitnessPal/types/myFitnessGoalsResponse';
 import { myFitnessPalDataStore } from '@/importers/myFitnessPal/dataStore';
@@ -7,6 +11,7 @@ import compact from 'lodash/compact';
 import { MyFitnessNewsFeedData } from '@/importers/myFitnessPal/types/myFitnessNewsFeedResponse';
 import { getNewsFeedPageToken } from '@/importers/myFitnessPal/utils/getNewsFeedPageToken';
 import { MyFitnessProfileResponse } from '@/importers/myFitnessPal/types/myFitnessProfileResponse';
+import { MyFitnessReportResponse } from '@/importers/myFitnessPal/types/myFitnessReportResponse';
 
 export class MyFitnessPalImporterService {
   constructor() {}
@@ -95,5 +100,59 @@ export class MyFitnessPalImporterService {
     }).then(async (rs) => (await rs.json()) as MyFitnessProfileResponse);
     await myFitnessPalDataStore[MyFitnessPalTableNames.PROFILE].put(myFitnessProfileResponse);
     return { finishedCurrentState: true };
+  }
+
+  static async importReports() {
+    const reportPageHtml = await fetch(MY_FITNESS_PAL_URL.REPORT_URL, {
+      credentials: 'include',
+      mode: 'cors',
+    }).then(async (rs) => await rs.text());
+    const dom = new DOMParser().parseFromString(reportPageHtml);
+    const reportSelector = dom.getElementById('report');
+    const optgroupElements = reportSelector?.getElementsByTagName('optgroup');
+
+    const optionGroups = optgroupElements?.map((optgroup) => {
+      const optionTags = optgroup.getElementsByTagName('option');
+      return {
+        type: optgroup.getAttribute('label'),
+        options: optionTags?.map((option) => {
+          return {
+            value: option.getAttribute('value'),
+            report: option.textContent.trim(),
+          };
+        }),
+      };
+    });
+
+    if (!optionGroups) return { finishedCurrentState: true };
+
+    for (const optionGroup of optionGroups) {
+      if (optionGroup.options && optionGroup.type) {
+        for (const option of optionGroup.options) {
+          if (!option.value) continue;
+          const reportData = await this.fetchReportData(
+            option.report,
+            optionGroup.type.toLowerCase(),
+            option.value,
+            REPORT_DATE
+          );
+          await myFitnessPalDataStore[MyFitnessPalTableNames.REPORTS].put(reportData);
+        }
+      }
+    }
+    return { finishedCurrentState: true };
+  }
+
+  private static async fetchReportData(
+    report: string,
+    type: string,
+    value: string,
+    date: number
+  ): Promise<MyFitnessReportResponse> {
+    const url = `${MY_FITNESS_PAL_URL.REPORT_URL}/results/${type}/${value}/${date}.json?report_name=${report}`;
+    return await fetch(url, {
+      credentials: 'include',
+      mode: 'cors',
+    }).then(async (rs) => (await rs.json()) as MyFitnessReportResponse);
   }
 }
