@@ -21,12 +21,12 @@ export class MyFitnessPalImporterService {
    * @returns {Promise<string | undefined>} requestToken if the user is logged in, undefined otherwise
    */
   static async silentCheckAuthentication(): Promise<string | undefined> {
-    const isAuth = await fetch(MY_FITNESS_PAL_URL.SESSION_URL, {
+    const response = await fetch(MY_FITNESS_PAL_URL.SESSION_URL, {
       credentials: 'include',
       mode: 'cors',
       redirect: 'manual',
-    }).then((rs) => rs.ok);
-    if (!isAuth) return;
+    }).then(async (rs) => (await rs.json()) as MyFitnessProfileResponse);
+    if (!response?.userId) return;
 
     const homePageHtml = await fetch(MY_FITNESS_PAL_URL.HOME_PAGE_URL, {
       credentials: 'include',
