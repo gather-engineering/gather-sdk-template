@@ -5,6 +5,8 @@ import { myFitnessPalDataStore } from '@/importers/myFitnessPal/dataStore';
 import DOMParser from 'dom-parser';
 import compact from 'lodash/compact';
 import { MyFitnessNewsFeedData } from '@/importers/myFitnessPal/types/myFitnessNewsFeedResponse';
+import { getNewsFeedPageToken } from '@/importers/myFitnessPal/utils/getNewsFeedPageToken';
+import { MyFitnessProfileResponse } from '@/importers/myFitnessPal/types/myFitnessProfileResponse';
 
 export class MyFitnessPalImporterService {
   constructor() {}
@@ -72,7 +74,7 @@ export class MyFitnessPalImporterService {
     }).then(async (rs) => {
       const response = (await rs.json()) as MyFitnessNewsFeedData[];
       const link = rs.headers.get('link');
-      const token = this.getNewsFeedPageToken(link);
+      const token = getNewsFeedPageToken(link);
       if (token) {
         finishedCurrentState = false;
         pageToken = token;
@@ -85,13 +87,13 @@ export class MyFitnessPalImporterService {
     return { finishedCurrentState, pageToken };
   }
 
-  private static getNewsFeedPageToken(link: string | null) {
-    if (!link) return;
-    const regex = /<([^>]+)>;\s*rel=next/;
-    const match = link.match(regex);
-    const firstURL = match ? match[1] : null;
-    if (!firstURL) return;
-    const params = new URLSearchParams(new URL(firstURL).search);
-    return params.get('page_token');
+  static async importProfile() {
+    const myFitnessProfileResponse = await fetch(MY_FITNESS_PAL_URL.SESSION_URL, {
+      method: 'GET',
+      credentials: 'include',
+      mode: 'cors',
+    }).then(async (rs) => (await rs.json()) as MyFitnessProfileResponse);
+    await myFitnessPalDataStore[MyFitnessPalTableNames.PROFILE].put(myFitnessProfileResponse);
+    return { finishedCurrentState: true };
   }
 }

@@ -15,12 +15,14 @@ export const MY_FITNESS_PAL_URL = {
 export const AUTHENTICATION_CHECK_POLLING_MAX_COUNT = 120;
 
 export enum MyFitnessPalTableNames {
+  PROFILE = 'profile',
   DAILY_GOALS = 'dailyGoals',
   DEFAULT_GOALS = 'defaultGoals',
   NEWS_FEED = 'newsFeed',
 }
 
 export enum MY_FITNESS_PAL_SPECIFIC_STATES {
+  IMPORT_PROFILE = 'importProfile',
   IMPORT_GOALS = 'importGoals',
   IMPORT_NEWSFEED = 'importNewsfeed',
 }
