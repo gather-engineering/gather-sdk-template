@@ -45,7 +45,6 @@ export class MyFitnessPalImporterService {
   static async importGoals(requestToken: string) {
     const url = `${MY_FITNESS_PAL_URL.BASE_URL}/${requestToken}/${MY_FITNESS_PAL_URL.GOALS_URL}`;
     const response = await fetch(url, {
-      method: 'GET',
       credentials: 'include',
       mode: 'cors',
     }).then(async (rs) => (await rs.json()) as MyFitnessGoalsResponse);
@@ -73,7 +72,6 @@ export class MyFitnessPalImporterService {
     const url = `${MY_FITNESS_PAL_URL.TIME_LINE}?${params.toString()}`;
     let finishedCurrentState = true;
     const newsFeedData: MyFitnessNewsFeedData[] = await fetch(url, {
-      method: 'GET',
       credentials: 'include',
       mode: 'cors',
     }).then(async (rs) => {
@@ -94,7 +92,6 @@ export class MyFitnessPalImporterService {
 
   static async importProfile() {
     const myFitnessProfileResponse = await fetch(MY_FITNESS_PAL_URL.SESSION_URL, {
-      method: 'GET',
       credentials: 'include',
       mode: 'cors',
     }).then(async (rs) => (await rs.json()) as MyFitnessProfileResponse);

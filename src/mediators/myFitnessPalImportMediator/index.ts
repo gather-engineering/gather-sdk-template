@@ -17,9 +17,8 @@ import { closeTabById, createTab } from '@/components/utils/chromeTabs';
 class MyFitnessPalImportMediator extends ImportMediator {
   constructor() {
     super(DATA_SOURCES.MY_FITNESS_PAL, ImportMediatorType.ServiceWorker, {
-      /* TODO: update the schedule interval and unit */
-      scheduleInterval: 10,
-      scheduleUnit: 'minute',
+      scheduleInterval: 1,
+      scheduleUnit: 'day',
     });
   }
 
