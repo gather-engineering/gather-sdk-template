@@ -127,22 +127,30 @@ export class MyFitnessPalImporterService {
     if (!optionGroups) return { finishedCurrentState: true };
 
     for (const optionGroup of optionGroups) {
-      if (optionGroup.options && optionGroup.type) {
-        for (const option of optionGroup.options) {
-          if (!option.value) continue;
-          const reportData = await this.fetchReportData(
-            option.report,
-            optionGroup.type.toLowerCase(),
-            option.value,
-            REPORT_DATE
-          );
-          await myFitnessPalDataStore[MyFitnessPalTableNames.REPORTS].put(reportData);
-        }
+      if (!(optionGroup.options && optionGroup.type)) continue;
+      for (const option of optionGroup.options) {
+        if (!option.value) continue;
+        const reportData = await this.fetchReportData(
+          option.report,
+          optionGroup.type.toLowerCase(),
+          option.value,
+          REPORT_DATE
+        );
+        await myFitnessPalDataStore[MyFitnessPalTableNames.REPORTS].put(reportData);
       }
     }
     return { finishedCurrentState: true };
   }
 
+  /**
+   * Fetches the report data from MyFitnessPal
+   * @param report The report name
+   * @param type The report type (ex. Nutrients, Measurements, etc.)
+   * @param value The report value
+   * @param date The number of report date
+   * @private
+   * @returns {Promise<MyFitnessReportResponse>} The report data
+   */
   private static async fetchReportData(
     report: string,
     type: string,
