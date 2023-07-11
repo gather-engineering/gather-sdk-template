@@ -144,7 +144,7 @@ export class MyFitnessPalImporterService {
    * @param report The report name
    * @param type The report type (ex. Nutrients, Measurements, etc.)
    * @param value The report value
-   * @param date The number of report date
+   * @param date The number of day needed to be reported (ex. 7 days, 365 days, etc.)
    * @private
    * @returns {Promise<MyFitnessReportResponse>} The report data
    */
